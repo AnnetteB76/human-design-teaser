@@ -1,13 +1,19 @@
-// Zeichnet den Bodygraph im offiziellen Jovian-Archive-Stil (gegen Annettes
-// echtes Chart abgeglichen): heller Untergrund, Zentren in eigenen Farben,
-// abgerundete Ecken, geschwungene Kanäle, Schwarz = Personality, Rot = Design.
+// Zeichnet den Bodygraph nach Annettes eigener Canva-Vorlage: cremefarbene
+// Zentren (offen) / Rosé-Magenta (definiert), graue Kanten, schlichte
+// Zahlen ohne Kreise, feines graues Liniennetz im Hintergrund, eigene
+// Meditations-Silhouette in Rosé. Schwarz = Personality, Rot = Design.
 
 const GATE_INK = {
   personality: "#161113",
   design: "#b3261e",
-  none: "#c9c2b4",
-  noneText: "#a39c8c"
+  both: "#6b1530",
+  none: "#b8afa6"
 };
+
+const CENTER_FILL_DEFINED = "#b8558b";
+const CENTER_FILL_OPEN = "#fff5f0";
+const CENTER_BORDER = "#9b9490";
+const SILHOUETTE_FILL = "#efd5dd";
 
 function shapePoints(shape) {
   const { type, x1, y1, x2, y2 } = shape;
@@ -28,6 +34,10 @@ function shapePoints(shape) {
     default:
       return [[x1, y1], [x2, y1], [x2, y2], [x1, y2]];
   }
+}
+
+function shapeCentroid(shape) {
+  return [(shape.x1 + shape.x2) / 2, (shape.y1 + shape.y2) / 2];
 }
 
 // Baut einen SVG-Pfad mit abgerundeten Ecken für ein beliebiges Polygon
@@ -67,24 +77,22 @@ function gateState(gate, personalityGates, designGates) {
 }
 
 // Zieht die Tor-Position etwas Richtung Zentrums-Mittelpunkt, damit die
-// Kreise vollständig innerhalb der Zentrums-Form bleiben (nicht über den Rand hinausragen).
+// Zahlen vollständig innerhalb der Zentrums-Form bleiben (nicht über den Rand hinausragen).
 function insetGateCoord(gate) {
   const shape = CENTER_SHAPES[centerOfGate(gate)];
-  const cx = (shape.x1 + shape.x2) / 2;
-  const cy = (shape.y1 + shape.y2) / 2;
+  const [cx, cy] = shapeCentroid(shape);
   const [gx, gy] = GATE_COORDS[gate];
   const dx = gx - cx;
   const dy = gy - cy;
   const dist = Math.hypot(dx, dy) || 1;
   const nx = dx / dist;
   const ny = dy / dist;
-  const shrunkDist = Math.max(dist * 0.8 - 7, 0);
+  const shrunkDist = Math.max(dist * 0.78 - 6, 0);
   return [cx + nx * shrunkDist, cy + ny * shrunkDist];
 }
 
 // Gerade Linie von (x1,y1) nach (x2,y2), in der Mitte für die zweifarbige
-// (Schwarz/Rot) Kanal-Linie geteilt. Jovian Archive zeichnet Kanäle gerade,
-// keine Kurven — vorherige Bogen-Variante war der Fehler.
+// (Schwarz/Rot) Kanal-Linie geteilt.
 function straightChannelHalves(x1, y1, x2, y2) {
   const mx = (x1 + x2) / 2;
   const my = (y1 + y2) / 2;
@@ -94,17 +102,44 @@ function straightChannelHalves(x1, y1, x2, y2) {
   };
 }
 
-// Eigene, generische Meditations-Silhouette hinter dem Chart (keine Kopie
-// einer bestehenden Grafik) — sitzende Figur, Hände auf den Knien. Punkte im
-// Uhrzeigersinn, über die bestehende roundedPolygonPath-Funktion geglättet.
+// Eigene Meditations-Silhouette in Rosé (keine Kopie einer bestehenden
+// Grafik) — sitzende Figur mit Haarknoten, Hände nah an den Knien.
 function bodySilhouettePoints() {
   return [
-    [420, 10], [495, 60], [490, 130], [450, 175],
-    [570, 225], [620, 320], [640, 460], [700, 600], [720, 690],
-    [790, 770], [750, 950], [560, 1100], [420, 1160], [280, 1100],
-    [90, 950], [50, 770], [120, 690], [140, 600], [200, 460], [220, 320],
-    [270, 225], [390, 175], [330, 130], [345, 60]
+    [420, 5], [447, 8], [463, 30],
+    [497, 55], [493, 100], [478, 135], [453, 158],
+    [462, 180],
+    [560, 210], [635, 270], [660, 340], [655, 430],
+    [700, 520], [730, 590], [725, 670],
+    [800, 710], [845, 780], [850, 870],
+    [830, 950], [845, 1020], [835, 1100],
+    [780, 1170], [700, 1210], [600, 1225],
+    [600, 1300],
+    [420, 1310],
+    [240, 1300],
+    [240, 1225], [140, 1210], [60, 1170],
+    [5, 1100], [-5, 1020], [10, 950],
+    [-10, 870], [-5, 780], [40, 710],
+    [115, 670], [110, 590], [140, 520],
+    [185, 430], [180, 340], [205, 270], [280, 210],
+    [378, 180],
+    [387, 158], [362, 135], [347, 100], [343, 55]
   ];
+}
+
+// Feines graues Liniennetz zwischen allen Zentren, rein dekorativ (wie in
+// Annettes Vorlage), liegt hinter den echten Kanal-Linien.
+function centerMeshLines() {
+  const names = Object.keys(CENTER_SHAPES);
+  const parts = [];
+  for (let i = 0; i < names.length; i++) {
+    for (let j = i + 1; j < names.length; j++) {
+      const [x1, y1] = shapeCentroid(CENTER_SHAPES[names[i]]);
+      const [x2, y2] = shapeCentroid(CENTER_SHAPES[names[j]]);
+      parts.push(`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#d8d2ce" stroke-width="2"/>`);
+    }
+  }
+  return parts.join("");
 }
 
 function renderBodygraphSvg({ personalityGates, designGates, definedCenters, definedChannels }) {
@@ -112,22 +147,18 @@ function renderBodygraphSvg({ personalityGates, designGates, definedCenters, def
   const parts = [];
   parts.push(`<svg viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Dein Human Design Bodygraph">`);
 
-  parts.push(
-    '<defs><filter id="hd-shadow" x="-30%" y="-30%" width="160%" height="160%">' +
-      '<feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#000" flood-opacity="0.25"/>' +
-    '</filter></defs>'
-  );
+  parts.push(`<path d="${roundedPolygonPath(bodySilhouettePoints(), 60)}" fill="${SILHOUETTE_FILL}"/>`);
 
-  parts.push(`<path d="${roundedPolygonPath(bodySilhouettePoints(), 55)}" fill="#eee7d8" stroke="#ddd3bd" stroke-width="1.5"/>`);
+  parts.push('<g class="hd-mesh">');
+  parts.push(centerMeshLines());
+  parts.push("</g>");
 
   parts.push('<g class="hd-centers">');
   for (const [name, shape] of Object.entries(CENTER_SHAPES)) {
-    const path = roundedPolygonPath(shapePoints(shape), 14);
+    const path = roundedPolygonPath(shapePoints(shape), 10);
     const defined = definedCenters.has(name);
-    const fill = defined ? CENTER_COLORS[name] : "#ffffff";
-    parts.push(
-      `<path d="${path}" fill="${fill}" stroke="#8a8378" stroke-width="1.25" stroke-linejoin="round" filter="${defined ? "url(#hd-shadow)" : "none"}"/>`
-    );
+    const fill = defined ? CENTER_FILL_DEFINED : CENTER_FILL_OPEN;
+    parts.push(`<path d="${path}" fill="${fill}" stroke="${CENTER_BORDER}" stroke-width="2" stroke-linejoin="round"/>`);
   }
   parts.push("</g>");
 
@@ -138,8 +169,8 @@ function renderBodygraphSvg({ personalityGates, designGates, definedCenters, def
     const c1 = GATE_INK[gateState(g1, personalityGates, designGates)] || GATE_INK.design;
     const c2 = GATE_INK[gateState(g2, personalityGates, designGates)] || GATE_INK.design;
     const { first, second } = straightChannelHalves(x1, y1, x2, y2);
-    parts.push(`<path d="${first}" stroke="${c1}" stroke-width="3.5" stroke-linecap="round"/>`);
-    parts.push(`<path d="${second}" stroke="${c2}" stroke-width="3.5" stroke-linecap="round"/>`);
+    parts.push(`<path d="${first}" stroke="${c1}" stroke-width="4" stroke-linecap="round"/>`);
+    parts.push(`<path d="${second}" stroke="${c2}" stroke-width="4" stroke-linecap="round"/>`);
   }
   parts.push("</g>");
 
@@ -148,19 +179,15 @@ function renderBodygraphSvg({ personalityGates, designGates, definedCenters, def
     const gate = parseInt(gateStr);
     const [x, y] = insetGateCoord(gate);
     const state = gateState(gate, personalityGates, designGates);
-    const lit = state !== "none";
+    const defined = definedCenters.has(centerOfGate(gate));
+    let textColor = GATE_INK.none;
+    if (state === "personality") textColor = GATE_INK.personality;
+    else if (state === "design") textColor = GATE_INK.design;
+    else if (state === "both") textColor = GATE_INK.both;
+    if (state === "none" && defined) textColor = "#f3e2ea";
 
-    let fill = "#ffffff";
-    let stroke = GATE_INK.none;
-    let textColor = GATE_INK.noneText;
-
-    if (state === "personality") { fill = "#ffffff"; stroke = GATE_INK.personality; textColor = GATE_INK.personality; }
-    if (state === "design") { fill = "#ffffff"; stroke = GATE_INK.design; textColor = GATE_INK.design; }
-    if (state === "both") { fill = GATE_INK.personality; stroke = GATE_INK.design; textColor = "#ffffff"; }
-
-    parts.push(`<circle cx="${x}" cy="${y}" r="8.5" fill="${fill}" stroke="${stroke}" stroke-width="${state === "both" ? 2 : 1.25}"/>`);
     parts.push(
-      `<text x="${x}" y="${y}" text-anchor="middle" dominant-baseline="central" font-size="8.5" font-weight="${lit ? 700 : 400}" font-family="Inter, sans-serif" fill="${textColor}">${gate}</text>`
+      `<text x="${x}" y="${y}" text-anchor="middle" dominant-baseline="central" font-size="15" font-weight="700" font-family="Inter, sans-serif" fill="${textColor}">${gate}</text>`
     );
   }
   parts.push("</g>");

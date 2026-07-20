@@ -288,7 +288,7 @@ button:disabled { opacity: 0.5; cursor: default; }
   vertical-align: middle;
 }
 
-.dot-both { background: #161113; border: 2px solid #b3261e; }
+.dot-both { background: #6b1530; }
 .dot-personality { background: #161113; }
 .dot-design { background: #b3261e; }
 
