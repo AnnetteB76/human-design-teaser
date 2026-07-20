@@ -13,7 +13,6 @@ const GATE_INK = {
 const CENTER_FILL_DEFINED = "#b8558b";
 const CENTER_FILL_OPEN = "#fff5f0";
 const CENTER_BORDER = "#9b9490";
-const SILHOUETTE_FILL = "#efd5dd";
 
 function shapePoints(shape) {
   const { type, x1, y1, x2, y2 } = shape;
@@ -102,30 +101,14 @@ function straightChannelHalves(x1, y1, x2, y2) {
   };
 }
 
-// Eigene Meditations-Silhouette in Rosé (keine Kopie einer bestehenden
-// Grafik) — sitzende Figur mit Haarknoten, Hände nah an den Knien.
-function bodySilhouettePoints() {
-  return [
-    [420, 5], [447, 8], [463, 30],
-    [497, 55], [493, 100], [478, 135], [453, 158],
-    [462, 180],
-    [560, 210], [635, 270], [660, 340], [655, 430],
-    [700, 520], [730, 590], [725, 670],
-    [800, 710], [845, 780], [850, 870],
-    [830, 950], [845, 1020], [835, 1100],
-    [780, 1170], [700, 1210], [600, 1225],
-    [600, 1300],
-    [420, 1310],
-    [240, 1300],
-    [240, 1225], [140, 1210], [60, 1170],
-    [5, 1100], [-5, 1020], [10, 950],
-    [-10, 870], [-5, 780], [40, 710],
-    [115, 670], [110, 590], [140, 520],
-    [185, 430], [180, 340], [205, 270], [280, 210],
-    [378, 180],
-    [387, 158], [362, 135], [347, 100], [343, 55]
-  ];
-}
+// Silhouette ist ein aus Annettes eigener Canva-Vorlage ausgeschnittenes
+// Bild (silhouette.png, nur die Rosé-Fläche, Zentren-Formen als Löcher
+// entfernt), kein gezeichneter Pfad mehr — sieht dadurch echt menschlich aus.
+const SILHOUETTE_IMAGE = {
+  href: "silhouette.png",
+  naturalWidth: 700,
+  naturalHeight: 792
+};
 
 // Feines graues Liniennetz zwischen allen Zentren, rein dekorativ (wie in
 // Annettes Vorlage), liegt hinter den echten Kanal-Linien.
@@ -143,11 +126,21 @@ function centerMeshLines() {
 }
 
 function renderBodygraphSvg({ personalityGates, designGates, definedCenters, definedChannels }) {
-  const { width, height } = BODYGRAPH_VIEWBOX;
-  const parts = [];
-  parts.push(`<svg viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Dein Human Design Bodygraph">`);
+  const { height } = BODYGRAPH_VIEWBOX;
+  const chartCenterX = 420;
+  const imgHeight = height + 110;
+  const imgWidth = imgHeight * (SILHOUETTE_IMAGE.naturalWidth / SILHOUETTE_IMAGE.naturalHeight);
+  const imgX = chartCenterX - imgWidth / 2;
+  const imgY = -60;
+  const viewMinX = Math.min(imgX, 0) - 15;
+  const viewMinY = -30;
+  const viewWidth = Math.max(imgX + imgWidth, BODYGRAPH_VIEWBOX.width) - viewMinX + 15;
+  const viewHeight = height + 60;
 
-  parts.push(`<path d="${roundedPolygonPath(bodySilhouettePoints(), 60)}" fill="${SILHOUETTE_FILL}"/>`);
+  const parts = [];
+  parts.push(`<svg viewBox="${viewMinX} ${viewMinY} ${viewWidth} ${viewHeight}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Dein Human Design Bodygraph">`);
+
+  parts.push(`<image href="${SILHOUETTE_IMAGE.href}" x="${imgX}" y="${imgY}" width="${imgWidth}" height="${imgHeight}" preserveAspectRatio="xMidYMid meet"/>`);
 
   parts.push('<g class="hd-mesh">');
   parts.push(centerMeshLines());
