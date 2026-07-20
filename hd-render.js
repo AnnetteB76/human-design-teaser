@@ -156,7 +156,7 @@ function renderBodygraphSvg({ personalityGates, designGates, definedCenters, def
 
   parts.push('<g class="hd-centers">');
   for (const [name, shape] of Object.entries(CENTER_SHAPES)) {
-    const path = roundedPolygonPath(shapePoints(inflateShape(shape, 14)), 10);
+    const path = roundedPolygonPath(shapePoints(inflateShape(shape, 1.5)), 10);
     const defined = definedCenters.has(name);
     const fill = defined ? CENTER_FILL_DEFINED : CENTER_FILL_OPEN;
     parts.push(`<path d="${path}" fill="${fill}" stroke="${CENTER_BORDER}" stroke-width="2" stroke-linejoin="round"/>`);
