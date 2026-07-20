@@ -1,0 +1,309 @@
+:root {
+  --bg-deep: #1a0f22;
+  --rose-gold: #a8c4d4; /* Eisblau, Annettes Brand-Farbe (Element Luft) statt Rosé */
+  --rose-gold-soft: #c7ccd1; /* Silber */
+  --gold: #c9a227;
+  --gold-soft: #e4c76b;
+  --parchment: #f7e9e2;
+  --ink: #241a26;
+  --text-light: #f1e4de;
+  --muted: #b9c3cc;
+  --panel: rgba(38, 20, 42, 0.55);
+  --panel-border: rgba(168, 196, 212, 0.4);
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background-color: var(--bg-deep);
+  background-image:
+    radial-gradient(circle at 15% 10%, rgba(168, 196, 212, 0.22), transparent 40%),
+    radial-gradient(circle at 85% 8%, rgba(150, 80, 170, 0.3), transparent 45%),
+    radial-gradient(circle at 50% 100%, rgba(90, 40, 110, 0.28), transparent 50%),
+    radial-gradient(rgba(255, 255, 255, 0.55) 1px, transparent 1.5px);
+  background-size: auto, auto, auto, 46px 46px;
+  color: var(--text-light);
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+  display: flex;
+  justify-content: center;
+  padding: 40px 16px;
+}
+
+main {
+  width: 100%;
+  max-width: 460px;
+}
+
+h1 {
+  font-family: "Tenor Sans", serif;
+  font-weight: 400;
+  font-size: 1.9rem;
+  letter-spacing: 0.03em;
+  margin-bottom: 6px;
+  color: var(--rose-gold-soft);
+  text-align: center;
+}
+
+.flourish {
+  text-align: center;
+  color: var(--rose-gold);
+  opacity: 0.85;
+  letter-spacing: 0.3em;
+  font-size: 0.8rem;
+  margin-bottom: 14px;
+}
+
+.subtitle {
+  color: var(--muted);
+  font-size: 0.95rem;
+  margin-bottom: 32px;
+  line-height: 1.6;
+  text-align: center;
+}
+
+form {
+  background: var(--panel);
+  border: 1px solid var(--panel-border);
+  border-radius: 18px;
+  padding: 24px 22px 28px;
+  backdrop-filter: blur(6px);
+  box-shadow: 0 0 40px rgba(201, 162, 39, 0.06);
+}
+
+label {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--muted);
+  margin: 18px 0 6px;
+}
+
+input, select {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--panel-border);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text-light);
+  font-size: 1rem;
+  font-family: inherit;
+}
+
+input:focus, select:focus {
+  outline: none;
+  border-color: var(--gold);
+}
+
+.time-row {
+  display: flex;
+  gap: 10px;
+}
+.time-row > div { flex: 1; }
+
+button {
+  margin-top: 28px;
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--rose-gold-soft), var(--rose-gold));
+  color: #14232b;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  font-family: inherit;
+  box-shadow: 0 0 26px rgba(168, 196, 212, 0.35);
+}
+button:hover { opacity: 0.92; }
+button:disabled { opacity: 0.5; cursor: default; }
+
+.error {
+  margin-top: 14px;
+  color: #e3a6a6;
+  font-size: 0.9rem;
+}
+
+#result {
+  display: none;
+  margin-top: 36px;
+  padding: 28px 24px;
+  border-radius: 18px;
+  background: var(--panel);
+  border: 1px solid var(--panel-border);
+  backdrop-filter: blur(6px);
+}
+
+#result.visible { display: block; }
+
+.result-greeting {
+  color: var(--muted);
+  font-size: 0.9rem;
+  margin-bottom: 6px;
+  text-align: center;
+}
+
+.result-type {
+  font-family: "Tenor Sans", serif;
+  font-size: 1.7rem;
+  color: var(--rose-gold-soft);
+  margin-bottom: 4px;
+  text-align: center;
+}
+
+.result-profile {
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.85rem;
+  letter-spacing: 0.08em;
+  margin-bottom: 20px;
+}
+
+.result-text {
+  line-height: 1.7;
+  font-size: 1rem;
+}
+
+.result-block {
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 1px solid var(--panel-border);
+}
+
+.result-block-label {
+  font-family: "Tenor Sans", serif;
+  color: var(--rose-gold-soft);
+  font-size: 1.05rem;
+  margin-bottom: 8px;
+}
+
+.result-block-text {
+  line-height: 1.7;
+  font-size: 0.98rem;
+}
+
+.hd-caption {
+  text-align: center;
+  color: var(--rose-gold);
+  opacity: 0.9;
+  letter-spacing: 0.2em;
+  font-size: 0.75rem;
+  margin: 0 0 10px;
+}
+
+.hd-explainer {
+  color: #6b6459;
+  font-size: 0.82rem;
+  line-height: 1.6;
+  margin: 14px 2px 0;
+}
+
+#bodygraph-wrap {
+  margin: 28px 0;
+  background: #fbf9f5;
+  border-radius: 24px;
+  padding: 22px 16px 18px;
+  border: 1px solid rgba(232, 199, 102, 0.55);
+  box-shadow: 0 0 40px rgba(232, 199, 102, 0.15);
+}
+
+.hd-caption { color: #8a8378; }
+
+.hd-chart-row {
+  display: flex;
+  align-items: stretch;
+  gap: 4px;
+}
+
+#bodygraph {
+  flex: 1;
+  min-width: 0;
+}
+
+#bodygraph svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.hd-planet-table {
+  width: 54px;
+  flex-shrink: 0;
+  font-size: 0.62rem;
+  color: #6b6459;
+  padding-top: 4px;
+}
+
+.hd-planet-header {
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  font-size: 0.6rem;
+  margin-bottom: 6px;
+  text-align: center;
+}
+
+.hd-planet-design .hd-planet-header,
+.hd-planet-design .hd-planet-value { color: #b3261e; }
+.hd-planet-personality .hd-planet-header,
+.hd-planet-personality .hd-planet-value { color: #161113; }
+
+.hd-planet-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 4px;
+  padding: 2.5px 4px;
+  border-radius: 4px;
+  background: rgba(28, 23, 18, 0.04);
+  margin-bottom: 2px;
+}
+
+.hd-planet-symbol { opacity: 0.75; }
+.hd-planet-value { font-weight: 600; }
+
+@media (max-width: 380px) {
+  .hd-chart-row { flex-direction: column; }
+  .hd-planet-table { width: 100%; }
+  .hd-planet-row { display: inline-flex; width: auto; margin-right: 4px; }
+}
+
+.hd-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  justify-content: center;
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(28, 23, 18, 0.15);
+  font-size: 0.78rem;
+  color: #6b6459;
+}
+
+.hd-legend .dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-right: 5px;
+  vertical-align: middle;
+}
+
+.dot-both { background: #161113; border: 2px solid #b3261e; }
+.dot-personality { background: #161113; }
+.dot-design { background: #b3261e; }
+
+.result-cta {
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 1px solid var(--panel-border);
+  color: var(--muted);
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+footer {
+  margin-top: 30px;
+  text-align: center;
+  color: #6f6688;
+  font-size: 0.75rem;
+}

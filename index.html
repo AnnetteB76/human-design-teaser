@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dein Human Design Energie-Typ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Tenor+Sans&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=7">
+</head>
+<body>
+<main>
+  <h1>Dein Energie-Typ</h1>
+  <p class="flourish">✦ ・ ☾ ・ ✦</p>
+  <p class="subtitle">Trag deine Geburtsdaten ein und finde in 10 Sekunden heraus, welcher Human-Design-Energie-Typ du bist. Für die exakte Berechnung brauche ich deine genaue Geburtszeit.</p>
+
+  <form id="hd-form" autocomplete="off">
+    <label for="name">Dein Vorname</label>
+    <input type="text" id="name" required placeholder="z.B. Anna" autocomplete="off">
+
+    <label for="ort">Geburtsort (optional, nur für dich)</label>
+    <input type="text" id="ort" placeholder="z.B. Wien" autocomplete="off">
+
+    <div class="time-row">
+      <div>
+        <label for="datum">Geburtsdatum</label>
+        <input type="date" id="datum" required autocomplete="off">
+      </div>
+      <div>
+        <label for="zeit">Geburtszeit</label>
+        <input type="time" id="zeit" required autocomplete="off">
+      </div>
+    </div>
+
+    <label for="zone">Zeitzone am Geburtsort (zum Geburtszeitpunkt)</label>
+    <select id="zone" required autocomplete="off"></select>
+
+    <button type="submit">Meinen Energie-Typ berechnen</button>
+    <div class="error" id="error"></div>
+  </form>
+
+  <div id="result">
+    <div class="result-greeting" id="result-greeting"></div>
+    <div class="result-type" id="result-type"></div>
+    <div class="result-profile" id="result-profile"></div>
+    <div class="result-text" id="result-text"></div>
+
+    <div class="result-block">
+      <div class="result-block-label" id="strategy-label"></div>
+      <div class="result-block-text" id="strategy-text"></div>
+    </div>
+
+    <div class="result-block">
+      <div class="result-block-label" id="authority-label"></div>
+      <div class="result-block-text" id="authority-text"></div>
+    </div>
+
+    <div class="result-block">
+      <div class="result-block-label" id="profile-label"></div>
+      <div class="result-block-text" id="profile-text"></div>
+    </div>
+
+    <div id="bodygraph-wrap">
+      <p class="hd-caption">✦ dein Energiefeld ✦</p>
+      <div class="hd-chart-row">
+        <div id="planet-table-design"></div>
+        <div id="bodygraph"></div>
+        <div id="planet-table-personality"></div>
+      </div>
+      <p class="hd-explainer" id="bodygraph-explainer"></p>
+      <div class="hd-legend">
+        <span><i class="dot dot-both"></i> Personality + Design</span>
+        <span><i class="dot dot-personality"></i> Personality (bewusst)</span>
+        <span><i class="dot dot-design"></i> Design (unbewusst)</span>
+      </div>
+    </div>
+
+    <div class="result-cta">
+      Das ist erst der Anfang. In einem persönlichen Human-Design-Reading schauen wir uns dein ganzes Chart im Detail an: jeden Kanal, jedes Tor, was es für dich konkret bedeutet.
+    </div>
+  </div>
+
+  <footer>Kostenlose Kurz-Einschätzung, basierend auf astronomischen Standardberechnungen. Ersetzt kein vollständiges Human-Design-Reading.</footer>
+</main>
+
+<script src="astronomy.js"></script>
+<script src="hd-data.js?v=4"></script>
+<script src="hd-engine.js?v=4"></script>
+<script src="hd-content.js?v=4"></script>
+<script src="hd-render.js?v=4"></script>
+<script>
+(function populateTimezones() {
+  const select = document.getElementById("zone");
+  let zones;
+  try {
+    zones = Intl.supportedValuesOf("timeZone");
+  } catch (e) {
+    zones = ["Europe/Vienna", "Europe/Berlin", "Europe/Zurich", "Europe/London", "America/New_York", "UTC"];
+  }
+  let detected;
+  try { detected = Intl.DateTimeFormat().resolvedOptions().timeZone; } catch (e) { detected = null; }
+
+  for (const zone of zones) {
+    const opt = document.createElement("option");
+    opt.value = zone;
+    opt.textContent = zone.replace(/_/g, " ");
+    if (zone === detected) opt.selected = true;
+    select.appendChild(opt);
+  }
+})();
+
+document.getElementById("hd-form").addEventListener("submit", function (e) {
+  e.preventDefault();
+  const errorEl = document.getElementById("error");
+  errorEl.textContent = "";
+
+  const name = document.getElementById("name").value.trim() || "Du";
+  const datum = document.getElementById("datum").value;
+  const zeit = document.getElementById("zeit").value;
+  const timeZone = document.getElementById("zone").value;
+
+  if (!datum || !zeit) {
+    errorEl.textContent = "Bitte Geburtsdatum und Geburtszeit angeben.";
+    return;
+  }
+
+  const [year, month, day] = datum.split("-").map(Number);
+  const [hour, minute] = zeit.split(":").map(Number);
+
+  try {
+    const chart = calculateHumanDesignType({ year, month, day, hour, minute, timeZone });
+    const { type, authority, profile } = chart;
+
+    const typeLabel = type === "Manifesting Generator" ? "Manifestierender Generator" : type === "Reflector" ? "Reflector" : type === "Manifestor" ? "Manifestor" : type === "Projector" ? "Projector" : "Generator";
+    const authorityInfo = AUTHORITY_TEXTS[authority];
+    const strategyInfo = STRATEGY_TEXTS[type];
+
+    document.getElementById("result-greeting").textContent = "Hey " + name + ",";
+    document.getElementById("result-type").textContent = typeLabel;
+    document.getElementById("result-profile").textContent = "Profil " + profile.personalityLine + "/" + profile.designLine;
+    document.getElementById("result-text").textContent = TYPE_TEXTS[type];
+
+    document.getElementById("strategy-label").textContent = "Deine Strategie: " + strategyInfo.label;
+    document.getElementById("strategy-text").textContent = strategyInfo.text;
+
+    document.getElementById("authority-label").textContent = "Deine Autorität: " + authorityInfo.label;
+    document.getElementById("authority-text").textContent = authorityInfo.text;
+
+    document.getElementById("profile-label").textContent = "Dein Profil: " + profile.personalityLine + "/" + profile.designLine;
+    document.getElementById("profile-text").textContent = profileText(profile.personalityLine, profile.designLine);
+
+    document.getElementById("bodygraph").innerHTML = renderBodygraphSvg(chart);
+    document.getElementById("planet-table-design").innerHTML = renderPlanetTable(chart.designActivations, "Design", "hd-planet-design");
+    document.getElementById("planet-table-personality").innerHTML = renderPlanetTable(chart.personalityActivations, "Personality", "hd-planet-personality");
+    document.getElementById("bodygraph-explainer").textContent = BODYGRAPH_EXPLAINER;
+
+    const resultEl = document.getElementById("result");
+    resultEl.classList.add("visible");
+    resultEl.scrollIntoView({ behavior: "smooth", block: "start" });
+  } catch (err) {
+    console.error(err);
+    errorEl.textContent = "Da ist etwas schiefgelaufen. Bitte Angaben prüfen und nochmal versuchen.";
+  }
+});
+</script>
+</body>
+</html>
