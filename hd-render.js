@@ -82,9 +82,10 @@ function insetGateCoord(gate) {
   return [cx + nx * shrunkDist, cy + ny * shrunkDist];
 }
 
-// Ein sanft geschwungener Pfad von einem Punkt zu einem Zwischenpunkt (für die
-// zweifarbige Kanal-Linie), gebogen senkrecht zur Verbindungslinie.
-function curvedHalfPath(x1, y1, x2, y2, bulge) {
+// Eine einzelne sanfte Kurve von (x1,y1) nach (x2,y2), dann exakt in der Mitte
+// (de-Casteljau-Teilung) in zwei Hälften gesplittet, die sich glatt ohne Knick
+// verbinden — für die zweifarbige (Schwarz/Rot) Kanal-Linie.
+function curvedChannelHalves(x1, y1, x2, y2, bulge) {
   const mx = (x1 + x2) / 2;
   const my = (y1 + y2) / 2;
   const dx = x2 - x1;
@@ -92,9 +93,18 @@ function curvedHalfPath(x1, y1, x2, y2, bulge) {
   const len = Math.hypot(dx, dy) || 1;
   const nx = -dy / len;
   const ny = dx / len;
-  const cx = mx + nx * bulge;
-  const cy = my + ny * bulge;
-  return `M ${x1},${y1} Q ${cx},${cy} ${x2},${y2}`;
+  const ctrl = [mx + nx * bulge, my + ny * bulge];
+
+  const p0 = [x1, y1];
+  const p2 = [x2, y2];
+  const q1 = [(p0[0] + ctrl[0]) / 2, (p0[1] + ctrl[1]) / 2];
+  const r1 = [(ctrl[0] + p2[0]) / 2, (ctrl[1] + p2[1]) / 2];
+  const splitPoint = [(q1[0] + r1[0]) / 2, (q1[1] + r1[1]) / 2];
+
+  return {
+    first: `M ${p0[0]},${p0[1]} Q ${q1[0]},${q1[1]} ${splitPoint[0]},${splitPoint[1]}`,
+    second: `M ${splitPoint[0]},${splitPoint[1]} Q ${r1[0]},${r1[1]} ${p2[0]},${p2[1]}`
+  };
 }
 
 function renderBodygraphSvg({ personalityGates, designGates, definedCenters, definedChannels }) {
@@ -123,13 +133,11 @@ function renderBodygraphSvg({ personalityGates, designGates, definedCenters, def
   for (const [g1, g2] of definedChannels) {
     const [x1, y1] = insetGateCoord(g1);
     const [x2, y2] = insetGateCoord(g2);
-    const mx = (x1 + x2) / 2;
-    const my = (y1 + y2) / 2;
     const c1 = GATE_INK[gateState(g1, personalityGates, designGates)] || GATE_INK.design;
     const c2 = GATE_INK[gateState(g2, personalityGates, designGates)] || GATE_INK.design;
-    const bulge = 10;
-    parts.push(`<path d="${curvedHalfPath(x1, y1, mx, my, bulge)}" stroke="${c1}" stroke-width="3.5" stroke-linecap="round"/>`);
-    parts.push(`<path d="${curvedHalfPath(mx, my, x2, y2, bulge)}" stroke="${c2}" stroke-width="3.5" stroke-linecap="round"/>`);
+    const { first, second } = curvedChannelHalves(x1, y1, x2, y2, 10);
+    parts.push(`<path d="${first}" stroke="${c1}" stroke-width="3.5" stroke-linecap="round"/>`);
+    parts.push(`<path d="${second}" stroke="${c2}" stroke-width="3.5" stroke-linecap="round"/>`);
   }
   parts.push("</g>");
 
