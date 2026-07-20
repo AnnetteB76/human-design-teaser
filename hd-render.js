@@ -39,6 +39,14 @@ function shapeCentroid(shape) {
   return [(shape.x1 + shape.x2) / 2, (shape.y1 + shape.y2) / 2];
 }
 
+// Vergrößert eine Zentrums-Form etwas nach außen, damit sie das
+// entsprechende "Loch" in der Silhouette (aus der Canva-Vorlage
+// ausgeschnitten) sicher komplett abdeckt, auch bei kleinen
+// Positions-Abweichungen zwischen beiden Koordinatensystemen.
+function inflateShape(shape, margin) {
+  return { ...shape, x1: shape.x1 - margin, y1: shape.y1 - margin, x2: shape.x2 + margin, y2: shape.y2 + margin };
+}
+
 // Baut einen SVG-Pfad mit abgerundeten Ecken für ein beliebiges Polygon
 // (funktioniert für Quadrat, Dreiecke und Raute gleichermaßen).
 function roundedPolygonPath(points, radius) {
@@ -148,7 +156,7 @@ function renderBodygraphSvg({ personalityGates, designGates, definedCenters, def
 
   parts.push('<g class="hd-centers">');
   for (const [name, shape] of Object.entries(CENTER_SHAPES)) {
-    const path = roundedPolygonPath(shapePoints(shape), 10);
+    const path = roundedPolygonPath(shapePoints(inflateShape(shape, 14)), 10);
     const defined = definedCenters.has(name);
     const fill = defined ? CENTER_FILL_DEFINED : CENTER_FILL_OPEN;
     parts.push(`<path d="${path}" fill="${fill}" stroke="${CENTER_BORDER}" stroke-width="2" stroke-linejoin="round"/>`);
