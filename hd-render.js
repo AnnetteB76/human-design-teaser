@@ -107,6 +107,19 @@ function curvedChannelHalves(x1, y1, x2, y2, bulge) {
   };
 }
 
+// Eigene, generische Meditations-Silhouette hinter dem Chart (keine Kopie
+// einer bestehenden Grafik) — sitzende Figur, Hände auf den Knien. Punkte im
+// Uhrzeigersinn, über die bestehende roundedPolygonPath-Funktion geglättet.
+function bodySilhouettePoints() {
+  return [
+    [420, 10], [495, 60], [490, 130], [450, 175],
+    [570, 225], [620, 320], [640, 460], [700, 600], [720, 690],
+    [790, 770], [750, 950], [560, 1100], [420, 1160], [280, 1100],
+    [90, 950], [50, 770], [120, 690], [140, 600], [200, 460], [220, 320],
+    [270, 225], [390, 175], [330, 130], [345, 60]
+  ];
+}
+
 function renderBodygraphSvg({ personalityGates, designGates, definedCenters, definedChannels }) {
   const { width, height } = BODYGRAPH_VIEWBOX;
   const parts = [];
@@ -117,6 +130,8 @@ function renderBodygraphSvg({ personalityGates, designGates, definedCenters, def
       '<feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#000" flood-opacity="0.25"/>' +
     '</filter></defs>'
   );
+
+  parts.push(`<path d="${roundedPolygonPath(bodySilhouettePoints(), 55)}" fill="#eee7d8" stroke="#ddd3bd" stroke-width="1.5"/>`);
 
   parts.push('<g class="hd-centers">');
   for (const [name, shape] of Object.entries(CENTER_SHAPES)) {
