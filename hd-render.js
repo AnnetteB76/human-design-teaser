@@ -82,28 +82,15 @@ function insetGateCoord(gate) {
   return [cx + nx * shrunkDist, cy + ny * shrunkDist];
 }
 
-// Eine einzelne sanfte Kurve von (x1,y1) nach (x2,y2), dann exakt in der Mitte
-// (de-Casteljau-Teilung) in zwei Hälften gesplittet, die sich glatt ohne Knick
-// verbinden — für die zweifarbige (Schwarz/Rot) Kanal-Linie.
-function curvedChannelHalves(x1, y1, x2, y2, bulge) {
+// Gerade Linie von (x1,y1) nach (x2,y2), in der Mitte für die zweifarbige
+// (Schwarz/Rot) Kanal-Linie geteilt. Jovian Archive zeichnet Kanäle gerade,
+// keine Kurven — vorherige Bogen-Variante war der Fehler.
+function straightChannelHalves(x1, y1, x2, y2) {
   const mx = (x1 + x2) / 2;
   const my = (y1 + y2) / 2;
-  const dx = x2 - x1;
-  const dy = y2 - y1;
-  const len = Math.hypot(dx, dy) || 1;
-  const nx = -dy / len;
-  const ny = dx / len;
-  const ctrl = [mx + nx * bulge, my + ny * bulge];
-
-  const p0 = [x1, y1];
-  const p2 = [x2, y2];
-  const q1 = [(p0[0] + ctrl[0]) / 2, (p0[1] + ctrl[1]) / 2];
-  const r1 = [(ctrl[0] + p2[0]) / 2, (ctrl[1] + p2[1]) / 2];
-  const splitPoint = [(q1[0] + r1[0]) / 2, (q1[1] + r1[1]) / 2];
-
   return {
-    first: `M ${p0[0]},${p0[1]} Q ${q1[0]},${q1[1]} ${splitPoint[0]},${splitPoint[1]}`,
-    second: `M ${splitPoint[0]},${splitPoint[1]} Q ${r1[0]},${r1[1]} ${p2[0]},${p2[1]}`
+    first: `M ${x1},${y1} L ${mx},${my}`,
+    second: `M ${mx},${my} L ${x2},${y2}`
   };
 }
 
@@ -150,7 +137,7 @@ function renderBodygraphSvg({ personalityGates, designGates, definedCenters, def
     const [x2, y2] = insetGateCoord(g2);
     const c1 = GATE_INK[gateState(g1, personalityGates, designGates)] || GATE_INK.design;
     const c2 = GATE_INK[gateState(g2, personalityGates, designGates)] || GATE_INK.design;
-    const { first, second } = curvedChannelHalves(x1, y1, x2, y2, 10);
+    const { first, second } = straightChannelHalves(x1, y1, x2, y2);
     parts.push(`<path d="${first}" stroke="${c1}" stroke-width="3.5" stroke-linecap="round"/>`);
     parts.push(`<path d="${second}" stroke="${c2}" stroke-width="3.5" stroke-linecap="round"/>`);
   }
