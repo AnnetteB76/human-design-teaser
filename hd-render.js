@@ -94,7 +94,7 @@ function insetGateCoord(gate) {
   const dist = Math.hypot(dx, dy) || 1;
   const nx = dx / dist;
   const ny = dy / dist;
-  const shrunkDist = Math.max(dist * 0.78 - 6, 0);
+  const shrunkDist = Math.max(dist * 0.78 - 3, 0);
   return [cx + nx * shrunkDist, cy + ny * shrunkDist];
 }
 
@@ -128,27 +128,19 @@ function potentialChannelLines(definedChannels) {
     if (definedSet.has(`${g1}-${g2}`)) continue;
     const [x1, y1] = insetGateCoord(g1);
     const [x2, y2] = insetGateCoord(g2);
-    parts.push(`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#e4dfda" stroke-width="1.5"/>`);
+    parts.push(`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#e4dfda" stroke-width="0.9"/>`);
   }
   return parts.join("");
 }
 
 function renderBodygraphSvg({ personalityGates, designGates, definedCenters, definedChannels }) {
-  const { height } = BODYGRAPH_VIEWBOX;
-  const chartCenterX = 420;
-  const imgHeight = height + 110;
-  const imgWidth = imgHeight * (SILHOUETTE_IMAGE.naturalWidth / SILHOUETTE_IMAGE.naturalHeight);
-  const imgX = chartCenterX - imgWidth / 2;
-  const imgY = -60;
-  const viewMinX = Math.min(imgX, 0) - 15;
-  const viewMinY = -30;
-  const viewWidth = Math.max(imgX + imgWidth, BODYGRAPH_VIEWBOX.width) - viewMinX + 15;
-  const viewHeight = height + 60;
+  const { width, height } = BODYGRAPH_VIEWBOX;
+  const margin = 12;
 
   const parts = [];
-  parts.push(`<svg viewBox="${viewMinX} ${viewMinY} ${viewWidth} ${viewHeight}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Dein Human Design Bodygraph">`);
+  parts.push(`<svg viewBox="${-margin} ${-margin} ${width + margin * 2} ${height + margin * 2}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Dein Human Design Bodygraph">`);
 
-  parts.push(`<image href="${SILHOUETTE_IMAGE.href}" x="${imgX}" y="${imgY}" width="${imgWidth}" height="${imgHeight}" preserveAspectRatio="xMidYMid meet"/>`);
+  parts.push(`<image href="${SILHOUETTE_IMAGE.href}" x="0" y="0" width="${SILHOUETTE_IMAGE.naturalWidth}" height="${SILHOUETTE_IMAGE.naturalHeight}"/>`);
 
   parts.push('<g class="hd-mesh">');
   parts.push(potentialChannelLines(definedChannels));
@@ -156,10 +148,10 @@ function renderBodygraphSvg({ personalityGates, designGates, definedCenters, def
 
   parts.push('<g class="hd-centers">');
   for (const [name, shape] of Object.entries(CENTER_SHAPES)) {
-    const path = roundedPolygonPath(shapePoints(inflateShape(shape, 1.5)), 10);
+    const path = roundedPolygonPath(shapePoints(shape), 6);
     const defined = definedCenters.has(name);
     const fill = defined ? CENTER_FILL_DEFINED : CENTER_FILL_OPEN;
-    parts.push(`<path d="${path}" fill="${fill}" stroke="${CENTER_BORDER}" stroke-width="2" stroke-linejoin="round"/>`);
+    parts.push(`<path d="${path}" fill="${fill}" stroke="${CENTER_BORDER}" stroke-width="1.2" stroke-linejoin="round"/>`);
   }
   parts.push("</g>");
 
@@ -170,8 +162,8 @@ function renderBodygraphSvg({ personalityGates, designGates, definedCenters, def
     const c1 = GATE_INK[gateState(g1, personalityGates, designGates)] || GATE_INK.design;
     const c2 = GATE_INK[gateState(g2, personalityGates, designGates)] || GATE_INK.design;
     const { first, second } = straightChannelHalves(x1, y1, x2, y2);
-    parts.push(`<path d="${first}" stroke="${c1}" stroke-width="4" stroke-linecap="round"/>`);
-    parts.push(`<path d="${second}" stroke="${c2}" stroke-width="4" stroke-linecap="round"/>`);
+    parts.push(`<path d="${first}" stroke="${c1}" stroke-width="2" stroke-linecap="round"/>`);
+    parts.push(`<path d="${second}" stroke="${c2}" stroke-width="2" stroke-linecap="round"/>`);
   }
   parts.push("</g>");
 
@@ -188,7 +180,7 @@ function renderBodygraphSvg({ personalityGates, designGates, definedCenters, def
     if (state === "none" && defined) textColor = "#f3e2ea";
 
     parts.push(
-      `<text x="${x}" y="${y}" text-anchor="middle" dominant-baseline="central" font-size="15" font-weight="700" font-family="Inter, sans-serif" fill="${textColor}">${gate}</text>`
+      `<text x="${x}" y="${y}" text-anchor="middle" dominant-baseline="central" font-size="7.5" font-weight="700" font-family="Inter, sans-serif" fill="${textColor}">${gate}</text>`
     );
   }
   parts.push("</g>");
