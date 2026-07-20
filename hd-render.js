@@ -110,17 +110,17 @@ const SILHOUETTE_IMAGE = {
   naturalHeight: 792
 };
 
-// Feines graues Liniennetz zwischen allen Zentren, rein dekorativ (wie in
-// Annettes Vorlage), liegt hinter den echten Kanal-Linien.
-function centerMeshLines() {
-  const names = Object.keys(CENTER_SHAPES);
+// Feine graue Linien für die tatsächlichen 36 Kanäle (nicht alle Zentren
+// wild untereinander), als "Potential"-Andeutung hinter den echten,
+// aktiven Kanal-Linien — wie in Annettes Vorlage.
+function potentialChannelLines(definedChannels) {
+  const definedSet = new Set(definedChannels.map(([g1, g2]) => `${g1}-${g2}`));
   const parts = [];
-  for (let i = 0; i < names.length; i++) {
-    for (let j = i + 1; j < names.length; j++) {
-      const [x1, y1] = shapeCentroid(CENTER_SHAPES[names[i]]);
-      const [x2, y2] = shapeCentroid(CENTER_SHAPES[names[j]]);
-      parts.push(`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#d8d2ce" stroke-width="2"/>`);
-    }
+  for (const [g1, g2] of CHANNELS) {
+    if (definedSet.has(`${g1}-${g2}`)) continue;
+    const [x1, y1] = insetGateCoord(g1);
+    const [x2, y2] = insetGateCoord(g2);
+    parts.push(`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#e4dfda" stroke-width="1.5"/>`);
   }
   return parts.join("");
 }
@@ -143,7 +143,7 @@ function renderBodygraphSvg({ personalityGates, designGates, definedCenters, def
   parts.push(`<image href="${SILHOUETTE_IMAGE.href}" x="${imgX}" y="${imgY}" width="${imgWidth}" height="${imgHeight}" preserveAspectRatio="xMidYMid meet"/>`);
 
   parts.push('<g class="hd-mesh">');
-  parts.push(centerMeshLines());
+  parts.push(potentialChannelLines(definedChannels));
   parts.push("</g>");
 
   parts.push('<g class="hd-centers">');
