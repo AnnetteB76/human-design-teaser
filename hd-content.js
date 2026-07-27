@@ -63,18 +63,19 @@ const AUTHORITY_TEXTS = {
 };
 
 const LINE_TEXTS = {
-  1: "die Forscherin: du brauchst ein sicheres Fundament und gehst gern in die Tiefe, bevor du dich zeigst",
-  2: "die Natürliche: deine Gabe zeigt sich am liebsten ungefragt, aus dem Rückzug heraus, bis andere dich rausrufen",
-  3: "die Entdeckerin: du lernst durch Ausprobieren, auch durch Umwege und das, was andere 'Fehler' nennen",
-  4: "die Netzwerkerin: du wirkst über persönliche Beziehungen, dein Kreis trägt dich",
-  5: "die Projektionsfläche: andere sehen in dir eine Lösung, bevor sie dich wirklich kennen",
-  6: "die Vorbildliche: du brauchst Zeit und Distanz, um Vertrauen zu verdienen, und wächst mit den Jahren zum Leuchtturm"
+  1: { label: "Forschend", text: "du brauchst ein sicheres Fundament und gehst gern in die Tiefe, bevor du dich zeigst" },
+  2: { label: "Natürlich", text: "deine Gabe zeigt sich am liebsten ungefragt, aus dem Rückzug heraus, bis andere dich rausrufen" },
+  3: { label: "Entdeckend", text: "du lernst durch Ausprobieren, auch durch Umwege und das, was andere 'Fehler' nennen" },
+  4: { label: "Vernetzt", text: "du wirkst über persönliche Beziehungen, dein Kreis trägt dich" },
+  5: { label: "Reflektierend", text: "andere sehen in dir eine Lösung, bevor sie dich wirklich kennen" },
+  6: { label: "Vorbildhaft", text: "du brauchst Zeit und Distanz, um Vertrauen zu verdienen, und wächst mit den Jahren zum Leuchtturm" }
 };
 
 function profileText(personalityLine, designLine) {
-  const p = LINE_TEXTS[personalityLine] || "";
-  const d = LINE_TEXTS[designLine] || "";
-  return `Bewusst bist du ${p}. Unbewusst trägst du ${d}. Beides gehört zu dir, auch wenn es sich manchmal widersprüchlich anfühlt.`;
+  const p = LINE_TEXTS[personalityLine];
+  const d = LINE_TEXTS[designLine];
+  if (!p || !d) return "";
+  return `Bewusst bist du ${p.label.toLowerCase()}: ${p.text}. Unbewusst trägst du ${d.label.toLowerCase()}: ${d.text}. Beides gehört zu dir, auch wenn es sich manchmal widersprüchlich anfühlt.`;
 }
 
 const BODYGRAPH_EXPLAINER = "Ausgefüllte Zentren sind fest definierte Energie in dir, verlässlich und immer verfügbar. Offene, weiße Zentren sind kein Mangel, sondern deine Antennen: hier bist du empfänglich für die Energie anderer Menschen und deiner Umgebung.";

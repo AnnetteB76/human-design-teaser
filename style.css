@@ -1,14 +1,10 @@
 :root {
-  --bg-deep: #1a0f22;
-  --rose-gold: #a8c4d4; /* Eisblau, Annettes Brand-Farbe (Element Luft) statt Rosé */
-  --rose-gold-soft: #c7ccd1; /* Silber */
-  --gold: #c9a227;
-  --gold-soft: #e4c76b;
-  --parchment: #f7e9e2;
-  --ink: #241a26;
-  --text-light: #f1e4de;
+  --bg-deep: #15171a; /* Anthrazit, Annettes Wegweiserin-Branding */
+  --rose-gold: #a8c4d4; /* Eisblau, Element Luft */
+  --rose-gold-soft: #c7ccd1; /* Silber, Element Luft */
+  --text-light: #f0eee9; /* Off-White */
   --muted: #b9c3cc;
-  --panel: rgba(38, 20, 42, 0.55);
+  --panel: rgba(21, 23, 26, 0.55);
   --panel-border: rgba(168, 196, 212, 0.4);
 }
 
@@ -46,8 +42,8 @@ body {
   background-color: var(--bg-deep);
   background-image:
     radial-gradient(circle at 15% 10%, rgba(168, 196, 212, 0.22), transparent 40%),
-    radial-gradient(circle at 85% 8%, rgba(150, 80, 170, 0.3), transparent 45%),
-    radial-gradient(circle at 50% 100%, rgba(90, 40, 110, 0.28), transparent 50%),
+    radial-gradient(circle at 85% 8%, rgba(199, 204, 209, 0.16), transparent 45%),
+    radial-gradient(circle at 50% 100%, rgba(168, 196, 212, 0.14), transparent 50%),
     radial-gradient(rgba(255, 255, 255, 0.55) 1px, transparent 1.5px);
   background-size: auto, auto, auto, 46px 46px;
   color: var(--text-light);
@@ -97,7 +93,7 @@ form {
   border-radius: 18px;
   padding: 24px 22px 28px;
   backdrop-filter: blur(6px);
-  box-shadow: 0 0 40px rgba(201, 162, 39, 0.06);
+  box-shadow: 0 0 40px rgba(168, 196, 212, 0.08);
 }
 
 label {
@@ -120,7 +116,7 @@ input, select {
 
 input:focus, select:focus {
   outline: none;
-  border-color: var(--gold);
+  border-color: var(--rose-gold);
 }
 
 .time-row {
@@ -142,7 +138,7 @@ button {
   letter-spacing: 0.02em;
   cursor: pointer;
   font-family: inherit;
-  box-shadow: 0 0 26px rgba(168, 196, 212, 0.35);
+  box-shadow: 0 0 26px rgba(168, 196, 212, 0.3);
 }
 button:hover { opacity: 0.92; }
 button:disabled { opacity: 0.5; cursor: default; }
@@ -232,8 +228,8 @@ button:disabled { opacity: 0.5; cursor: default; }
   background: #fbf9f5;
   border-radius: 24px;
   padding: 22px 16px 18px;
-  border: 1px solid rgba(232, 199, 102, 0.55);
-  box-shadow: 0 0 40px rgba(232, 199, 102, 0.15);
+  border: 1px solid rgba(168, 196, 212, 0.45);
+  box-shadow: 0 0 40px rgba(168, 196, 212, 0.15);
 }
 
 .hd-caption { color: #8a8378; }
@@ -332,6 +328,6 @@ button:disabled { opacity: 0.5; cursor: default; }
 footer {
   margin-top: 30px;
   text-align: center;
-  color: #6f6688;
+  color: #7d8790;
   font-size: 0.75rem;
 }
