@@ -14,8 +14,8 @@ const STRATEGY_TEXTS = {
     text: "Warte, bis dir etwas begegnet, das dich wirklich anspricht, ein Angebot, eine Frage, eine Gelegenheit. Reagiere aus dem Bauch, statt selbst aktiv loszurennen und Dinge zu erzwingen."
   },
   "Manifesting Generator": {
-    label: "Warten, Reagieren, Informieren",
-    text: "Wie ein Generator wartest du auf Resonanz, bevor du losgehst. Aber wenn du dann startest, informiere die Menschen um dich, damit dein Tempo und deine Sprünge niemanden überrumpeln."
+    label: "Warten und Reagieren",
+    text: "Genau wie ein Generator wartest du auf etwas, das dich wirklich anspricht, und reagierst dann aus dem Bauch. Sagt er Ja, darfst du mit voller Kraft und in deinem eigenen Tempo loslegen, auch mal Schritte überspringen."
   },
   "Manifestor": {
     label: "Informieren",
